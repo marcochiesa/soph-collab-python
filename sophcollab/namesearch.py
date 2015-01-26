@@ -40,6 +40,6 @@ class PubmedNameSearch(object):
             raise Exception("null name list")
         self.name_list = [NameParser(x.strip()).get_name() for x in name_list]
 
-    def article_counts_by_name(self):
-        m = pubmed.Runner(self.name_list).run()
+    def article_counts_by_name(self, progress_observer = None):
+        m = pubmed.Runner(self.name_list).run(progress_observer)
         return {k:len(v) for k, v in m.items()}

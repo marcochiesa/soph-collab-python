@@ -8,15 +8,22 @@ logging.getLogger('suds.client').setLevel(logging.WARN)
 logging.getLogger('suds.transport').setLevel(logging.WARN)
 
 class Runner(object):
+    PROGRESS_UPDATE_BATCH_SIZE = 1
+
     def __init__(self, names):
         if names is None:
             raise Exception("null name list")
         self.names = names
 
-    def run(self):
+    def run(self, progress_observer = None):
         results = {}
+        loop = 0
         for name in self.names:
+            loop += 1
             results[name] = ESearch().search_author(name).item_list()
+            if loop >= self.PROGRESS_UPDATE_BATCH_SIZE and progress_observer is not None:
+                progress_observer(len(results), len(self.names))
+                loop = 0
             #sleep half second to throttle requests per service usage guidelines
             time.sleep(0.5)
         return results
